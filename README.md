@@ -1,34 +1,17 @@
+# Project1: To build a model that can generate a descriptive caption for an image Without Attention :
+- Result:
+| Solarized Dark             | Solarized Ocean             |
+|:![alt text](image.png):|:![alt text](image-1.png):|
+| !Dark | !Ocean |
+- More results in Notebook
 
 
-I'm using `PyTorch 0.4` in `Python 3.6`.
 
----
 
-**27 Jan 2020**: Working code for two new tutorials has been added — [Super-Resolution](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Super-Resolution) and [Machine Translation](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Machine-Translation)
 
----
+# To build a model that can generate a descriptive caption for an image:
 
-# Contents
-
-[***Objective***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#objective)
-
-[***Concepts***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#concepts)
-
-[***Overview***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#overview)
-
-[***Implementation***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#implementation)
-
-[***Training***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#training)
-
-[***Inference***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#inference)
-
-[***Frequently Asked Questions***](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#faqs)
-
-# Objective
-
-**To build a model that can generate a descriptive caption for an image we provide it.**
-
-In the interest of keeping things simple, let's implement the [_Show, Attend, and Tell_](https://arxiv.org/abs/1502.03044) paper. This is by no means the current state-of-the-art, but is still pretty darn amazing. The authors' original implementation can be found [here](https://github.com/kelvinxu/arctic-captions).
+In the interest of keeping things simple, let's implement the [_Show, Attend, and Tell_](https://arxiv.org/abs/1502.03044) paper. This is by no means the current state-of-the-art, but is still pretty darn amazing.
 
 This model learns _where_ to look.
 
@@ -53,14 +36,6 @@ Here are some captions generated on _test_ images not seen during training or va
 ---
 
 ![](./img/sheep.png)
-
----
-
-![](./img/babycake.png)
-
----
-
-![](./img/dogtie.png)
 
 ---
 
