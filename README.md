@@ -1,17 +1,13 @@
-# Project1: To build a model that can generate a descriptive caption for an image Without Attention :
-- Result
+## Project1: To build a model that can generate a descriptive caption for an image Without Attention :
+- Some Result of Fiest Proect
 ---
 
-!<img src="image.png" alt="Image" width="400" height="300" /> !<img src="image-1.png" alt="Image" width="400" height="300" />
+!<img src="image.png" alt="Image" width="400" height="400" /> !<img src="image-1.png" alt="Image" width="400" height="400" />
 
 ---
 - More results in Notebook
 
-
-
-
-
-# To build a model that can generate a descriptive caption for an image:
+## Project2: To build a model that can generate a descriptive caption for an image:
 
 In the interest of keeping things simple, let's implement the [_Show, Attend, and Tell_](https://arxiv.org/abs/1502.03044) paper. This is by no means the current state-of-the-art, but is still pretty darn amazing.
 
@@ -45,7 +41,7 @@ There are more examples at the [end of the tutorial](https://github.com/sgrvinod
 
 ---
 
-# Concepts
+## Concepts Explaination behind this project
 
 * **Image captioning**. duh.
 
@@ -57,53 +53,36 @@ There are more examples at the [end of the tutorial](https://github.com/sgrvinod
 
 * **Beam Search**. This is where you don't let your Decoder be lazy and simply choose the words with the _best_ score at each decode-step. Beam Search is useful for any language modeling problem because it finds the most optimal sequence.
 
-# Overview
-
-In this section, I will present an overview of this model. If you're already familiar with it, you can skip straight to the [Implementation](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#implementation) section or the commented code.
 
 ### Encoder
 
-The Encoder **encodes the input image with 3 color channels into a smaller image with "learned" channels**.
-
-This smaller encoded image is a summary representation of all that's useful in the original image.
-
-Since we want to encode images, we use Convolutional Neural Networks (CNNs).
-
-We don't need to train an encoder from scratch. Why? Because there are already CNNs trained to represent images.
-
-For years, people have been building models that are extraordinarily good at classifying an image into one of a thousand categories. It stands to reason that these models capture the essence of an image very well.
-
-I have chosen to use the **101 layered Residual Network trained on the ImageNet classification task**, already available in PyTorch. As stated earlier, this is an example of Transfer Learning. You have the option of fine-tuning it to improve performance.
+- The Encoder **encodes the input image with 3 color channels into a smaller image with "learned" channels**. This smaller encoded image is a summary representation of all that's useful in the original image. Since we want to encode images, we use Convolutional Neural Networks (CNNs). We don't need to train an encoder from scratch. Why? Because there are already CNNs trained to represent images.
+- For years, people have been building models that are extraordinarily good at classifying an image into one of a thousand categories. It stands to reason that these models capture the essence of an image very well.
+- I have chosen to use the **101 layered Residual Network trained on the ImageNet classification task**, already available in PyTorch. As stated earlier, this is an example of Transfer Learning. You have the option of fine-tuning it to improve performance.
 
 ![ResNet Encoder](./img/encoder.png)
 
-These models progressively create smaller and smaller representations of the original image, and each subsequent representation is more "learned", with a greater number of channels. The final encoding produced by our ResNet-101 encoder has a size of 14x14 with 2048 channels, i.e., a `2048, 14, 14` size tensor.
+- These models progressively create smaller and smaller representations of the original image, and each subsequent representation is more "learned", with a greater number of channels. The final encoding produced by our ResNet-101 encoder has a size of 14x14 with 2048 channels, i.e., a `2048, 14, 14` size tensor.
 
-I encourage you to experiment with other pre-trained architectures. The paper uses a VGGnet, also pretrained on ImageNet, but without fine-tuning. Either way, modifications are necessary. Since the last layer or two of these models are linear layers coupled with softmax activation for classification, we strip them away.
+- I encourage you to experiment with other pre-trained architectures. The paper uses a VGGnet, also pretrained on ImageNet, but without fine-tuning. Either way, modifications are necessary. Since the last layer or two of these models are linear layers coupled with softmax activation for classification, we strip them away.
 
-### Decoder
+### Decoder (Main diffrence between both projects)
 
-The Decoder's job is to **look at the encoded image and generate a caption word by word**.
+- The Decoder's job is to **look at the encoded image and generate a caption word by word**.Since it's generating a sequence, it would need to be a **Recurrent Neural Network (RNN). We will use an LSTM**.
 
-Since it's generating a sequence, it would need to be a Recurrent Neural Network (RNN). We will use an LSTM.
-
-In a typical setting without Attention, you could simply average the encoded image across all pixels. You could then feed this, with or without a linear transformation, into the Decoder as its first hidden state and generate the caption. Each predicted word is used to generate the next word.
+- **In a typical setting without Attention**, you could simply average the encoded image across all pixels. You could then feed this, with or without a linear transformation, into the Decoder as its first hidden state and generate the caption. Each predicted word is used to generate the next word.
 
 ![Decoder without Attention](./img/decoder_no_att.png)
 
-In a setting _with_ Attention, we want the Decoder to be able to **look at different parts of the image at different points in the sequence**. For example, while generating the word `football` in `a man holds a football`, the Decoder would know to focus on – you guessed it – the football!
+- **In a setting _with_ Attention**, we want the Decoder to be able to **look at different parts of the image at different points in the sequence**. For example, while generating the word `football` in `a man holds a football`, the Decoder would know to focus on – you guessed it – the football!
 
 ![Decoding with Attention](./img/decoder_att.png)
 
-Instead of the simple average, we use the _weighted_ average across all pixels, with the weights of the important pixels being greater. This weighted representation of the image can be concatenated with the previously generated word at each step to generate the next word.
+- **Instead of the simple average, we use the _weighted_ average across all pixels**, with the weights of the important pixels being greater. This weighted representation of the image can be concatenated with the previously generated word at each step to generate the next word.
 
 ### Attention
 
-The Attention network **computes these weights**.
-
-Intuitively, how would you estimate the importance of a certain part of an image? You would need to be aware of the sequence you have generated _so far_, so you can look at the image and decide what needs describing next. For example, after you mention `a man`, it is logical to declare that he is `holding a football`.
-
-This is exactly what the Attention mechanism does – it considers the sequence generated thus far, and _attends_ to the part of the image that needs describing next.
+- The Attention network **computes these weights**.Intuitively, how would you estimate the importance of a certain part of an image? You would need to be aware of the sequence you have generated _so far_, so you can look at the image and decide what needs describing next. For example, after you mention `a man`, it is logical to declare that he is `holding a football`.This is exactly what the Attention mechanism does – it considers the sequence generated thus far, and _attends_ to the part of the image that needs describing next.
 
 ![Attention](./img/att.png)
 
@@ -128,11 +107,8 @@ It might be clear by now what our combined network looks like.
 
 ### Beam Search
 
-We use a linear layer to transform the Decoder's output into a score for each word in the vocabulary.
-
-The straightforward – and greedy – option would be to choose the word with the highest score and use it to predict the next word. But this is not optimal because the rest of the sequence hinges on that first word you choose. If that choice isn't the best, everything that follows is sub-optimal. And it's not just the first word – each word in the sequence has consequences for the ones that succeed it.
-
-It might very well happen that if you'd chosen the _third_ best word at that first step, and the _second_ best word at the second step, and so on... _that_ would be the best sequence you could generate.
+- We use a linear layer to transform the Decoder's output into a score for each word in the vocabulary. The straightforward – and greedy – option would be to choose the word with the highest score and use it to predict the next word. But this is not optimal because the rest of the sequence hinges on that first word you choose. If that choice isn't the best, everything that follows is sub-optimal. And it's not just the first word – each word in the sequence has consequences for the ones that succeed it.
+- It might very well happen that if you'd chosen the _third_ best word at that first step, and the _second_ best word at the second step, and so on... _that_ would be the best sequence you could generate.
 
 It would be best if we could somehow _not_ decide until we've finished decoding completely, and **choose the sequence that has the highest _overall_ score from a basket of candidate sequences**.
 
@@ -149,80 +125,37 @@ Beam Search does exactly this.
 
 As you can see, some sequences (striked out) may fail early, as they don't make it to the top `k` at the next step. Once `k` sequences (underlined) generate the `<end>` token, we choose the one with the highest score.
 
-# Implementation
+### Implementation
+#### Dataset:
+- I'm using the Flicker8k Dataset and download this images dataset from kaggle. We will use [Andrej Karpathy's training, validation, and test splits](http://cs.stanford.edu/people/karpathy/deepimagesent/caption_datasets.zip). This zip file contain the captions. You will also find splits and captions for the Flicker8k and Flicker30k datasets.
+- So if any want to use other data like MSCOCO and Flicker30k the feel free to use this but need to download images for these dataset.
 
-The sections below briefly describe the implementation.
-
-They are meant to provide some context, but **details are best understood directly from the code**, which is quite heavily commented.
-
-### Dataset
-
-I'm using the MSCOCO '14 Dataset. You'd need to download the [Training (13GB)](http://images.cocodataset.org/zips/train2014.zip) and [Validation (6GB)](http://images.cocodataset.org/zips/val2014.zip) images.
-
-We will use [Andrej Karpathy's training, validation, and test splits](http://cs.stanford.edu/people/karpathy/deepimagesent/caption_datasets.zip). This zip file contain the captions. You will also find splits and captions for the Flicker8k and Flicker30k datasets, so feel free to use these instead of MSCOCO if the latter is too large for your computer.
-
-### Inputs to model
+#### Inputs to model:
 
 We will need three inputs.
 
-#### Images
+- Images:
 
-Since we're using a pretrained Encoder, we would need to process the images into the form this pretrained Encoder is accustomed to.
+Since we're using a pretrained Encoder, we would need to process the images into the form this pretrained Encoder is accustomed to. Pretrained ImageNet models available as part of PyTorch's `torchvision` module. [This page](https://pytorch.org/docs/master/torchvision/models.html) details the preprocessing or transformation we need to perform – pixel values must be in the range [0,1] and we must then normalize the image by the mean and standard deviation of the ImageNet images' RGB channels. Also, PyTorch follows the NCHW convention, which means the channels dimension (C) must precede the size dimensions. We will resize all Flicker8k images to 256x256 for uniformity. Therefore, **images fed to the model must be a `Float` tensor of dimension `N, 3, 256, 256`**, and must be normalized by the aforesaid mean and standard deviation. `N` is the batch size.
 
-Pretrained ImageNet models available as part of PyTorch's `torchvision` module. [This page](https://pytorch.org/docs/master/torchvision/models.html) details the preprocessing or transformation we need to perform – pixel values must be in the range [0,1] and we must then normalize the image by the mean and standard deviation of the ImageNet images' RGB channels.
+- Captions:
 
-```python
-mean = [0.485, 0.456, 0.406]
-std = [0.229, 0.224, 0.225]
-```
-Also, PyTorch follows the NCHW convention, which means the channels dimension (C) must precede the size dimensions.
+Captions are both the target and the inputs of the Decoder as each word is used to generate the next word. To generate the first word, however, we need a *zeroth* word, `<start>`. At the last word, we should predict `<end>` the Decoder must learn to predict the end of a caption. This is necessary because we need to know when to stop decoding during inference.`<start> a man holds a football <end>`Since we pass the captions around as fixed size Tensors, we need to pad captions (which are naturally of varying length) to the same length with `<pad>` tokens.`<start> a man holds a football <end> <pad> <pad> <pad>....`Furthermore, we create a `word_map` which is an index mapping for each word in the corpus, including the `<start>`,`<end>`, and `<pad>` tokens. PyTorch, like other libraries, needs words encoded as indices to look up embeddings for them or to identify their place in the predicted word scores.
 
-We will resize all MSCOCO images to 256x256 for uniformity.
+- Caption Lengths:
 
-Therefore, **images fed to the model must be a `Float` tensor of dimension `N, 3, 256, 256`**, and must be normalized by the aforesaid mean and standard deviation. `N` is the batch size.
+Since the captions are padded, we would need to keep track of the lengths of each caption. This is the actual length + 2 (for the `<start>` and `<end>` tokens). Caption lengths are also important because you can build dynamic graphs with PyTorch. We only process a sequence upto its length and don't waste compute on the `<pad>`s. Therefore, **caption lengths fed to the model must be an `Int` tensor of dimension `N`**.
 
-#### Captions
+#### Data pipeline
 
-Captions are both the target and the inputs of the Decoder as each word is used to generate the next word.
-
-To generate the first word, however, we need a *zeroth* word, `<start>`.
-
-At the last word, we should predict `<end>` the Decoder must learn to predict the end of a caption. This is necessary because we need to know when to stop decoding during inference.
-
-`<start> a man holds a football <end>`
-
-Since we pass the captions around as fixed size Tensors, we need to pad captions (which are naturally of varying length) to the same length with `<pad>` tokens.
-
-`<start> a man holds a football <end> <pad> <pad> <pad>....`
-
-Furthermore, we create a `word_map` which is an index mapping for each word in the corpus, including the `<start>`,`<end>`, and `<pad>` tokens. PyTorch, like other libraries, needs words encoded as indices to look up embeddings for them or to identify their place in the predicted word scores.
-
-`9876 1 5 120 1 5406 9877 9878 9878 9878....`
-
-Therefore, **captions fed to the model must be an `Int` tensor of dimension `N, L`** where `L` is the padded length.
-
-#### Caption Lengths
-
-Since the captions are padded, we would need to keep track of the lengths of each caption. This is the actual length + 2 (for the `<start>` and `<end>` tokens).
-
-Caption lengths are also important because you can build dynamic graphs with PyTorch. We only process a sequence upto its length and don't waste compute on the `<pad>`s.
-
-Therefore, **caption lengths fed to the model must be an `Int` tensor of dimension `N`**.
-
-### Data pipeline
-
-See `create_input_files()` in [`utils.py`](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning/blob/master/utils.py).
-
-This reads the data downloaded and saves the following files –
+See `create_input_files()` in `utils.py`, This reads the data downloaded and saves the following files –
 
 - An **HDF5 file containing images for each split in an `I, 3, 256, 256` tensor**, where `I` is the number of images in the split. Pixel values are still in the range [0, 255], and are stored as unsigned 8-bit `Int`s.
 - A **JSON file for each split with a list of `N_c` * `I` encoded captions**, where `N_c` is the number of captions sampled per image. These captions are in the same order as the images in the HDF5 file. Therefore, the `i`th caption will correspond to the `i // N_c`th image.
 - A **JSON file for each split with a list of `N_c` * `I` caption lengths**. The `i`th value is the length of the `i`th caption, which corresponds to the `i // N_c`th image.
 - A **JSON file which contains the `word_map`**, the word-to-index dictionary.
 
-Before we save these files, we have the option to only use captions that are shorter than a threshold, and to bin less frequent words into an `<unk>` token.
-
-We use HDF5 files for the images because we will read them directly from disk during training / validation. They're simply too large to fit into RAM all at once. But we do load all captions and their lengths into memory.
+Before we save these files, we have the option to only use captions that are shorter than a threshold, and to bin less frequent words into an `<unk>` token. We use HDF5 files for the images because we will read them directly from disk during training / validation. They're simply too large to fit into RAM all at once. But we do load all captions and their lengths into memory.
 
 See `CaptionDataset` in [`datasets.py`](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning/blob/master/datasets.py).
 
