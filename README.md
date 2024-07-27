@@ -1,7 +1,10 @@
 # Project1: To build a model that can generate a descriptive caption for an image Without Attention :
-- Result:
--!<img src="image.png" alt="Image" width="400" height="300 /> !<img src="image-1.png" alt="Image" width="400" height="300 />
+- Result
+---
 
+!<img src="image.png" alt="Image" width="400" height="300" /> !<img src="image-1.png" alt="Image" width="400" height="300" />
+
+---
 - More results in Notebook
 
 
