@@ -1,5 +1,5 @@
-## Project1: To build a model that can generate a descriptive caption for an image Without Attention :
-- Some Result of Fiest Proect
+## Project1: To build a model that can generate caption for an image Without Attention :
+- Some Result of First Project
 ---
 
 !<img src="image.png" alt="Image" width="400" height="400" /> !<img src="image-1.png" alt="Image" width="400" height="400" />
@@ -28,10 +28,6 @@
 ---
 
 ![](./img/sheep.png)
-
----
-
-There are more examples at the [end of the tutorial](https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Image-Captioning#some-more-examples).
 
 ---
 
@@ -103,12 +99,12 @@ There are more examples at the [end of the tutorial](https://github.com/sgrvinod
 - It might very well happen that if you'd chosen the _third_ best word at that first step, and the _second_ best word at the second step, and so on... _that_ would be the best sequence you could generate. It would be best if we could somehow choose the sequence that has the highest _overall_ score from a basket of candidate sequences.
 
 - Beam Search does exactly this.
- - At the first decode step, consider the top `k` candidates.
- - Generate `k` second words for each of these `k` first words.
- - Choose the top `k` [first word, second word] combinations considering additive scores.
- - For each of these `k` second words, choose `k` third words, choose the top `k` [first word, second word, third word] combinations.
- - Repeat at each decode step.
- - After `k` sequences terminate, choose the sequence with the best overall score.
+  - At the first decode step, consider the top `k` candidates.
+  - Generate `k` second words for each of these `k` first words.
+  - Choose the top `k` [first word, second word] combinations considering additive scores.
+  - For each of these `k` second words, choose `k` third words, choose the top `k` [first word, second word, third word] combinations.
+  - Repeat at each decode step.
+  - After `k` sequences terminate, choose the sequence with the best overall score.
 
 ![Beam Search example](./img/beam_search.png)
 
@@ -130,11 +126,11 @@ There are more examples at the [end of the tutorial](https://github.com/sgrvinod
 
 #### Encoder:
 
-See `Encoder` in `models.py`, We use a pretrained ResNet-101 already available in PyTorch's `torchvision` module. Discard the last two layers (pooling and linear layers), since we only need to encode the image, and not classify it. We do add an `AdaptiveAvgPool2d()` layer to **resize the encoding to a fixed size**. This makes it possible to feed images of variable size to the Encoder. (We did, however, resize our input images to `256, 256` because we had to store them together as a single tensor.) Since we may want to fine-tune the Encoder, we add a `fine_tune()` method which enables or disables the calculation of gradients for the Encoder's parameters. We **only fine-tune convolutional blocks 2 through 4 in the ResNet**, because the first convolutional block would have usually learned something very fundamental to image processing, such as detecting lines, edges, curves, etc. We don't mess with the foundations.
+- See `Encoder` in `models.py`, We use a pretrained ResNet-101 already available in PyTorch's `torchvision` module. Discard the last two layers (pooling and linear layers), since we only need to encode the image, and not classify it. We do add an `AdaptiveAvgPool2d()` layer to **resize the encoding to a fixed size**. This makes it possible to feed images of variable size to the Encoder. (We did, however, resize our input images to `256, 256` because we had to store them together as a single tensor.) Since we may want to fine-tune the Encoder, we add a `fine_tune()` method which enables or disables the calculation of gradients for the Encoder's parameters. We **only fine-tune convolutional blocks 2 through 4 in the ResNet**, because the first convolutional block would have usually learned something very fundamental to image processing, such as detecting lines, edges, curves, etc. We don't mess with the foundations.
 
 #### Attention:
 
-See `Attention` in `models.py`, the Attention network is simple, it's composed of only linear layers and a couple of activations.Separate linear layers **transform both the encoded image (flattened to `N, 14 * 14, 2048`) and the hidden state (output) from the Decoder to the same dimension**, viz. the Attention size. They are then added and ReLU activated. A third linear layer **transforms this result to a dimension of 1**, whereupon we **apply the softmax to generate the weights** `alpha`.
+- See `Attention` in `models.py`, the Attention network is simple, it's composed of only linear layers and a couple of activations.Separate linear layers **transform both the encoded image (flattened to `N, 14 * 14, 2048`) and the hidden state (output) from the Decoder to the same dimension**, viz. the Attention size. They are then added and ReLU activated. A third linear layer **transforms this result to a dimension of 1**, whereupon we **apply the softmax to generate the weights** `alpha`.
 
 #### Decoder:
 
