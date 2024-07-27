@@ -1,10 +1,7 @@
 # Project1: To build a model that can generate a descriptive caption for an image Without Attention :
 - Result:
-!<img src="image.png" alt="Image" width="300" /> !<img src="image-1.png" alt="Image" width="300" />
+-!<img src="image.png" alt="Image" width="400" height="300 /> !<img src="image-1.png" alt="Image" width="400" height="300 />
 
-<!-- | Solarized Dark             | Solarized Ocean             |
-|:![alt text](image.png):|:![alt text](image-1.png):|
-| !Dark | !Ocean | -->
 - More results in Notebook
 
 
