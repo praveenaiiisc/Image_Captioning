@@ -124,7 +124,7 @@ def main():
         # Check if there was an improvement
         is_best = recent_bleu4 > best_bleu4
         best_bleu4 = max(recent_bleu4, best_bleu4)
-        if not is_best:
+        if not is_best:                                        # whenever i got best_bleu4 score then i continue increse epocs for training
             epochs_since_improvement += 1
             print("\nEpochs since last improvement: %d\n" % (epochs_since_improvement,))
         else:

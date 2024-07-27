@@ -9,10 +9,10 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 # Parameters
-data_folder = '/media/ssd/caption data'  # folder with data files saved by create_input_files.py
-data_name = 'coco_5_cap_per_img_5_min_word_freq'  # base name shared by data files
-checkpoint = '../BEST_checkpoint_coco_5_cap_per_img_5_min_word_freq.pth.tar'  # model checkpoint
-word_map_file = '/media/ssd/caption data/WORDMAP_coco_5_cap_per_img_5_min_word_freq.json'  # word map, ensure it's the same the data was encoded with and the model was trained with
+data_folder = '/home/praveent/Image_Captioning/data'  # folder with data files saved by create_input_files.py
+data_name = 'flickr8k_5_cap_per_img_5_min_word_freq'  # base name shared by data files
+checkpoint = './BEST_checkpoint_flickr8k_5_cap_per_img_5_min_word_freq.pth.tar'  # model checkpoint
+word_map_file = '/home/praveent/Image_Captioning/data/WORDMAP_flickr8k_5_cap_per_img_5_min_word_freq.json'  # word map, ensure it's the same the data was encoded with and the model was trained with
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # sets device for model and PyTorch tensors
 cudnn.benchmark = True  # set to true only if inputs to model are fixed size; otherwise lot of computational overhead
 
@@ -125,7 +125,7 @@ def evaluate(beam_size):
             next_word_inds = top_k_words % vocab_size  # (s)
 
             # Add new words to sequences
-            seqs = torch.cat([seqs[prev_word_inds], next_word_inds.unsqueeze(1)], dim=1)  # (s, step+1)
+            seqs = torch.cat([seqs[prev_word_inds.long()], next_word_inds.unsqueeze(1)], dim=1)  # (s, step+1)
 
             # Which sequences are incomplete (didn't reach <end>)?
             incomplete_inds = [ind for ind, next_word in enumerate(next_word_inds) if
@@ -142,9 +142,9 @@ def evaluate(beam_size):
             if k == 0:
                 break
             seqs = seqs[incomplete_inds]
-            h = h[prev_word_inds[incomplete_inds]]
-            c = c[prev_word_inds[incomplete_inds]]
-            encoder_out = encoder_out[prev_word_inds[incomplete_inds]]
+            h = h[prev_word_inds[incomplete_inds].long()]
+            c = c[prev_word_inds[incomplete_inds].long()]
+            encoder_out = encoder_out[prev_word_inds[incomplete_inds].long()]
             top_k_scores = top_k_scores[incomplete_inds].unsqueeze(1)
             k_prev_words = next_word_inds[incomplete_inds].unsqueeze(1)
 
